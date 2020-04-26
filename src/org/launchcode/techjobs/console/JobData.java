@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,16 +43,19 @@ public class JobData {
                 values.add(aValue);
             }
         }
-
+         Collections.sort(values);
         return values;
     }
 
     public static ArrayList<HashMap<String, String>> findAll() {
-
+        ArrayList<HashMap<String, String>> allJobsClone = new ArrayList<>();
         // load data, if not already loaded
         loadData();
+        for (HashMap<String, String> entry : allJobs) {
+            allJobsClone.add(entry);
+        }
 
-        return allJobs;
+        return allJobsClone;
     }
 
     /**
@@ -74,9 +78,9 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
-            if (aValue.contains(value)) {
+            if (aValue.contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
@@ -84,6 +88,23 @@ public class JobData {
         return jobs;
     }
 
+    public static ArrayList<HashMap<String, String>> findByValue(String value) {
+
+        loadData();
+
+        ArrayList<HashMap<String, String>> searchAllFields = new ArrayList<>();
+
+        for (HashMap<String, String> job : allJobs) {
+           for (String key : job.keySet()) {
+              String aValue = job.get(key).toLowerCase();
+              if (aValue.contains(value.toLowerCase()) && !searchAllFields.contains(job)) {
+                  searchAllFields.add(job);
+              }
+           }
+        }
+
+        return searchAllFields;
+    }
     /**
      * Read in data from a CSV file and store it in a list
      */
